@@ -37,15 +37,30 @@ export class Game extends Scene {
         this.groundCollider.body.setSize(1000, 30); //(adjust collision size if needed)
         this.physics.add.collider(this.player, this.groundCollider);
         this.obstacles=this.physics.add.group({allowGravity: false});
+        this.groundCollider.setVisible(false); 
+        this.timer=0;
         
 
     }
 
-    update() {
+    update(time,delta) {
         //game logic
         this.ground.tilePositionX +=this.gameSpeed;
-        this.obstacleNum=Math.floor(Math.random()*6)+1;
-        this.obstacles.create(500, 220,`obstacle-${this.obstacleNum}`).setOrigin(0);
+        this.timer+=delta;
+        console.log(this.timer);
+        if (this.timer>1000){
+            this.obstacleNum=Math.floor(Math.random()*6)+1;
+            this.obstacles.create(500, 220,`obstacle-${this.obstacleNum}`).setOrigin(0);
+            this.timer-=1000;
     }
+        Phaser.Actions.IncX(this.obstacles.getChildren(), -this.gameSpeed);
+        this.obstacles.getChildren().forEach(obstacle=>{
+            if (obstacle.getBounds().right<0){
+                this.obstacles.remove(obstacle);
+                obstacle.destroy();
+            }
+        })
+        
+}
 
 }
